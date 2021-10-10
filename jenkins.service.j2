@@ -1,0 +1,17 @@
+[Unit]
+Description=Jenkins
+After=syslog.target network.target
+
+[Service]
+Environment=JAVA_HOME=/usr/local/java/latest
+Environment=JENKINS_HOME=/usr/local/jenkins/jenkins-{{jenkins_version}}/home
+
+ExecStart=/bin/sh -c '/usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.war --webroot=/usr/local/jenkins/jenkins-{{jenkins_version}}/webroot > /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.log 2>&1'
+#StandardOutput=file:/usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.log
+#StandardError=file:/usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.err
+
+User=jenkins
+Group=jenkins
+
+[Install]
+WantedBy=multi-user.target
