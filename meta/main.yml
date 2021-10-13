@@ -1,0 +1,6 @@
+---
+
+dependencies:
+  - src: https://github.com/wahlax/ansible-jdk-role
+    version: main
+    name: ansible-jdk-role

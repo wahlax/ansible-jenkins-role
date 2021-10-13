@@ -1,0 +1,61 @@
+---
+# Install Jenkins from download
+#
+# Parameters:
+#
+# jdk_version: 11.0.12_7
+# jdk_download_url: https://github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.12%2B7/OpenJDK11U-jdk_x64_linux_hotspot_11.0.12_7.tar.gz
+# jdk_download_sha256: 8770f600fc3b89bf331213c7aa21f8eedd9ca5d96036d1cd48cb2748a3dbefd2
+# jenkins_version: 2.303.2
+# jenkins_download_url: https://get.jenkins.io/war-stable/2.303.2/jenkins.war
+# jenkins_download_sha256: c4b8532e25a33001a3d8883d3cd87a664953ace239b486839b683065817d29cf
+
+- name: Install prerequisite packages
+  yum:
+    state: present
+    name:
+      - curl
+      - fontconfig
+
+- name: Temp hack for jenkins download SSL error
+  ansible.builtin.command: "{{item}}"
+  with_items:
+   - yum -y install ca-certificates
+   - /bin/update-ca-trust
+
+- name: Create jenkins group
+  ansible.builtin.group:
+    name: jenkins
+    state: present
+
+- name: Create jenkins user 
+  ansible.builtin.user:
+    name: jenkins
+    group: jenkins
+    state: present
+
+- name: Create full jenkins directory structure
+  ansible.builtin.file:
+    path: /usr/local/jenkins/jenkins-{{jenkins_version}}/home
+    state: directory
+    owner: jenkins
+    group: jenkins
+    mode: '750'
+    recurse: true
+
+- name: Download jenkins with checksum (sha256)
+  ansible.builtin.get_url:
+    url: "{{jenkins_download_url}}"
+    dest: /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.war
+    checksum: sha256:{{jenkins_download_sha256}}
+
+- name: Setup jenkins as systemd
+  ansible.builtin.template:
+    src: jenkins.service.j2
+    dest: /etc/systemd/system/jenkins.service
+
+- name: Start jenkins service
+  ansible.builtin.systemd:
+    name: jenkins.service
+    state: started
+    enabled: yes
