@@ -1,0 +1,10 @@
+jenkins_admin_username: admin
+jenkins_admin_password: jenkins123
+
+jenkins_global_secrets:
+  - name: test1-secret
+    description: this is test 1
+    text: test1-secret-value
+  - name: test2-secret
+    description: this is test 2
+    text: test2-secret-value

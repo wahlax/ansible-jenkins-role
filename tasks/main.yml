@@ -34,9 +34,9 @@
     group: jenkins
     state: present
 
-- name: Create full jenkins directory structure
+- name: Create full jenkins directory structure (and init script dir)
   ansible.builtin.file:
-    path: /usr/local/jenkins/jenkins-{{jenkins_version}}/home
+    path: "{{jenkins_install_path}}/home/init.groovy.d"
     state: directory
     owner: jenkins
     group: jenkins
@@ -46,7 +46,7 @@
 - name: Download jenkins with checksum (sha256)
   ansible.builtin.get_url:
     url: "{{jenkins_download_url}}"
-    dest: /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.war
+    dest: "{{jenkins_install_path}}/jenkins.war"
     checksum: sha256:{{jenkins_download_sha256}}
 
 - name: Setup jenkins as systemd
@@ -54,8 +54,76 @@
     src: jenkins.service.j2
     dest: /etc/systemd/system/jenkins.service
 
+- name: Place script to reset password
+  template:
+    src: reset-password.groovy.j2
+    dest: "{{jenkins_install_path}}/home/init.groovy.d/reset-password.groovy"
+    owner: jenkins
+    group: jenkins
+    mode: '750'
+
 - name: Start jenkins service
   ansible.builtin.systemd:
     name: jenkins.service
     state: started
     enabled: yes
+
+- name: Get the jenkins-cli jarfile from the Jenkins server.
+  get_url:
+    url:  http://localhost:8080/jnlpJars/jenkins-cli.jar
+    dest: "{{ jenkins_install_path }}"
+  become: yes
+  become_user: jenkins 
+  register: jarfile_get
+  until: "'OK' in jarfile_get.msg or '304' in jarfile_get.msg or 'file already exists' in jarfile_get.msg"
+  retries: 5
+  delay: 10
+  check_mode: false
+
+- name: Delete reset-password.groovy from init directory.
+  file:
+    path: "{{jenkins_install_path}}/home/init.groovy.d/reset-password.groovy"
+    state: absent
+
+- name: Install the plugins
+  ansible.builtin.shell: /usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{item}}:latest
+  with_items: "{{ jenkins_plugin_names }}"
+  become: yes
+  become_user: jenkins 
+  environment:
+    JENKINS_USER_ID: "{{jenkins_admin_username}}"
+    JENKINS_API_TOKEN: "{{jenkins_admin_password}}"
+
+- name: Place script to create credentials
+  template:
+    src: create-credentials.groovy.j2
+    dest: "{{jenkins_install_path}}/home/init.groovy.d/create-credentials.groovy"
+    owner: jenkins
+    group: jenkins
+    mode: '750'
+
+- name: Start jenkins service
+  ansible.builtin.systemd:
+    name: jenkins.service
+    state: restarted
+
+- name: Wait for Jenkins to start up before proceeding.
+  uri:
+    url: "http://localhost:8080/cli/"
+    method: GET
+    return_content: "yes"
+    timeout: 5
+    body_format: raw
+    follow_redirects: "no"
+    status_code: 200,403
+  register: result
+  until: (result.status == 403 or result.status == 200) and (result.content.find("Please wait while") == -1)
+  retries: 5
+  delay: 10
+  changed_when: false
+  check_mode: false
+
+- name: Delete groovy init directory.
+  file:
+    path: "{{jenkins_install_path}}/home/init.groovy.d"
+    state: absent

@@ -2,11 +2,23 @@
 
 Role installing and configuring a jenkins and jdk.
 
+## Required Parameters (provide via vault)
+
+ * `jenkins_admin_username` - admin username
+ * `jenkins_admin_password` - admin password
+ * ```
+jenkins_global_secrets:
+  - name: test1-secret
+    description: this is test 1
+    text: test1-secret-value
+```
+
 ## Optional Parameters
 
  * `jenkins_version` - Version of Jenkins
  * `jenkins_download_url` - URL of war for install
  * `jenkins_download_sha256` - Checksum of war file
+ * `jenkins_install_path` - Install path of jenkins
 
 Optional ansible-jdk-role parameters:
  * `jdk_version` - Version of JDK
