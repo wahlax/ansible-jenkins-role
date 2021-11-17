@@ -6,7 +6,9 @@ Role installing and configuring a jenkins and jdk.
 
  * `jenkins_admin_username` - admin username
  * `jenkins_admin_password` - admin password
- * ```
+ * `jenkins_global_secrets` - list of items as show below
+
+```
 jenkins_global_secrets:
   - name: test1-secret
     description: this is test 1
