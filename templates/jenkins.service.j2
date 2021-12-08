@@ -4,11 +4,11 @@ After=syslog.target network.target
 
 [Service]
 Environment=JAVA_HOME=/usr/local/java/latest
-Environment=JENKINS_HOME=/usr/local/jenkins/jenkins-{{jenkins_version}}/home
+Environment=JENKINS_HOME={{jenkins_install_path}}/home
 
-ExecStart=/bin/sh -c '/usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.war --webroot=/usr/local/jenkins/jenkins-{{jenkins_version}}/webroot > /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.log 2>&1'
-#StandardOutput=file:/usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.log
-#StandardError=file:/usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins.err
+ExecStart=/bin/sh -c '/usr/local/java/latest/bin/java -jar {{jenkins_install_path}}/jenkins.war {{jenkins_extra_params}} --webroot={{jenkins_install_path}}/webroot > {{jenkins_install_path}}/jenkins.log 2>&1'
+#StandardOutput=file:{{jenkins_install_path}}/jenkins.log
+#StandardError=file:{{jenkins_install_path}}/jenkins.err
 
 User=jenkins
 Group=jenkins

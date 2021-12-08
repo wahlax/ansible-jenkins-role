@@ -70,7 +70,7 @@
 
 - name: Get the jenkins-cli jarfile from the Jenkins server.
   get_url:
-    url:  http://localhost:8080/jnlpJars/jenkins-cli.jar
+    url:  "{{ jenkins_local_url }}/jnlpJars/jenkins-cli.jar"
     dest: "{{ jenkins_install_path }}"
   become: yes
   become_user: jenkins 
@@ -86,7 +86,7 @@
     state: absent
 
 - name: Install the plugins
-  ansible.builtin.shell: /usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins-cli.jar -s http://localhost:8080/ install-plugin {{item}}:latest
+  ansible.builtin.shell: /usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins-cli.jar -s {{jenkins_local_url}}/ install-plugin {{item}}:latest
   with_items: "{{ jenkins_plugin_names }}"
   become: yes
   become_user: jenkins 
@@ -109,7 +109,7 @@
 
 - name: Wait for Jenkins to start up before proceeding.
   uri:
-    url: "http://localhost:8080/cli/"
+    url: "{{ jenkins_local_url }}/cli/"
     method: GET
     return_content: "yes"
     timeout: 5

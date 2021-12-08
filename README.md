@@ -21,6 +21,8 @@ jenkins_global_secrets:
  * `jenkins_download_url` - URL of war for install
  * `jenkins_download_sha256` - Checksum of war file
  * `jenkins_install_path` - Install path of jenkins
+ * `jenkins_local_url` - URL for localhost
+ * `jenkins_extra_params` - Extra params for jenkins cli
 
 Optional ansible-jdk-role parameters:
  * `jdk_version` - Version of JDK
