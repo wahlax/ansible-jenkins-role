@@ -72,6 +72,7 @@
   get_url:
     url:  "{{ jenkins_local_url }}/jnlpJars/jenkins-cli.jar"
     dest: "{{ jenkins_install_path }}"
+    validate_certs: "{{ jenkins_selfsigned_cert | ternary('no', 'yes') }}"
   become: yes
   become_user: jenkins 
   register: jarfile_get
@@ -86,7 +87,7 @@
     state: absent
 
 - name: Install the plugins
-  ansible.builtin.shell: /usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins-cli.jar -s {{jenkins_local_url}}/ install-plugin {{item}}:latest
+  ansible.builtin.shell: /usr/local/java/latest/bin/java -jar /usr/local/jenkins/jenkins-{{jenkins_version}}/jenkins-cli.jar {{ jenkins_selfsigned_cert | ternary('-noCertificateCheck','') }} -s {{jenkins_local_url}}/ install-plugin {{item}}:latest
   with_items: "{{ jenkins_plugin_names }}"
   become: yes
   become_user: jenkins 
@@ -116,6 +117,7 @@
     body_format: raw
     follow_redirects: "no"
     status_code: 200,403
+    validate_certs: "{{ jenkins_selfsigned_cert | ternary('no', 'yes') }}"
   register: result
   until: (result.status == 403 or result.status == 200) and (result.content.find("Please wait while") == -1)
   retries: 5

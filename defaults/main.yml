@@ -13,6 +13,7 @@ jenkins_download_sha256: c4b8532e25a33001a3d8883d3cd87a664953ace239b486839b68306
 jenkins_install_path: /usr/local/jenkins/jenkins-{{jenkins_version}}
 jenkins_local_url: http://localhost:8080
 jenkins_extra_params: ''
+jenkins_selfsigned_cert: no
 
 jenkins_plugin_names:
   - cloudbees-folder

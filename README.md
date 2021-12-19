@@ -23,6 +23,7 @@ jenkins_global_secrets:
  * `jenkins_install_path` - Install path of jenkins
  * `jenkins_local_url` - URL for localhost
  * `jenkins_extra_params` - Extra params for jenkins cli
+ * `jenkins_selfsigned_cert` - yes/no for self-signed ssl cert (yes = disabled cert validation during install)
 
 Optional ansible-jdk-role parameters:
  * `jdk_version` - Version of JDK

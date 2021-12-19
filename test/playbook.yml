@@ -1,5 +1,10 @@
 - hosts: all
   become: yes
 
+  pre_tasks:
+    - name: Configure ssh
+      ansible.builtin.include_role:
+        name: wahlax.sshconfig
+
   roles:
     - ../../ansible-jenkins-role
