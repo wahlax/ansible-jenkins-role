@@ -38,6 +38,7 @@ Run the following from the test directory:
 
 ### Initial Install
 ```
+ansible-galaxy install -r requirements.yml
 vagrant up
 ```
 

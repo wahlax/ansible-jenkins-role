@@ -2,9 +2,9 @@
   become: yes
 
   pre_tasks:
-    - name: Configure ssh
+    - name: Init Base VM
       ansible.builtin.include_role:
-        name: wahlax.sshconfig
+        name: wahlax.init_base
 
   roles:
     - ../../ansible-jenkins-role

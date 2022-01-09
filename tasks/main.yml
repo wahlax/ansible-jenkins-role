@@ -17,12 +17,6 @@
       - curl
       - fontconfig
 
-- name: Temp hack for jenkins download SSL error
-  ansible.builtin.command: "{{item}}"
-  with_items:
-   - yum -y install ca-certificates
-   - /bin/update-ca-trust
-
 - name: Create jenkins group
   ansible.builtin.group:
     name: jenkins
