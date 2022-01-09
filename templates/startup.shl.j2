@@ -1,0 +1,4 @@
+#!/bin/sh
+
+JENKINS_STARTUP_OPTIONS="{{jenkins_extra_params}} --webroot={{jenkins_install_path}}/webroot"
+/usr/local/java/latest/bin/java -jar {{jenkins_install_path}}/jenkins.war ${JENKINS_STARTUP_OPTIONS}

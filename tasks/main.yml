@@ -43,6 +43,14 @@
     dest: "{{jenkins_install_path}}/jenkins.war"
     checksum: sha256:{{jenkins_download_sha256}}
 
+- name: Custom startup script for jenkins
+  ansible.builtin.template:
+    src: startup.shl.j2
+    dest: "{{jenkins_install_path}}/startup.shl"
+    owner: jenkins
+    group: jenkins
+    mode: '700'
+
 - name: Setup jenkins as systemd
   ansible.builtin.template:
     src: jenkins.service.j2
